@@ -15,8 +15,17 @@ import { Bucket } from "@aws-cdk/aws-s3";
 import { Construct, SecretValue, Stack, StackProps } from "@aws-cdk/core";
 import { CfnOutput, RemovalPolicy } from "@aws-cdk/core";
 import { websiteBucketArn } from "../config/pipelineConfig";
+import {
+  SLACK_BOT_TOKEN,
+  SLACK_CHANNEL_NAME,
+  SLACK_SIGNING_SECRET,
+} from "../config/slackConfig";
 import { Topic } from "@aws-cdk/aws-sns";
 import { PipelineEvent } from "./pipeline-event";
+import {
+  SlackApprovalAction,
+  SlackNotifier,
+} from "@cloudcomponents/cdk-codepipeline-slack";
 
 export class CodePipelineStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -37,12 +46,30 @@ export class CodePipelineStack extends Stack {
 
     const artifactBucket = new Bucket(this, "artifactBucket", {
       bucketName: "velocity-pipeline-artifact-bucket",
+      autoDeleteObjects: true,
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
     const sourceArtifact = new Artifact("reactRepoLatestMain");
 
     const buildArtifact = new Artifact("reactBuildOutputArtifact");
+
+    const slackBotToken = SLACK_BOT_TOKEN;
+    const slackSigningSecret = SLACK_SIGNING_SECRET;
+    const slackChannel = SLACK_CHANNEL_NAME;
+
+    console.log("slackSigningSecret", slackSigningSecret);
+
+    const approvalAction = new SlackApprovalAction({
+      actionName: "SlackApproval",
+      slackBotToken,
+      slackSigningSecret,
+      slackChannel,
+      slackBotName: "Velocity",
+      externalEntityLink: "http://cloudcomponents.org",
+      additionalInformation:
+        "Would you like to promote the build to production?",
+    });
 
     const pipeline = new Pipeline(this, "reactPipeline", {
       artifactBucket,
@@ -74,13 +101,7 @@ export class CodePipelineStack extends Stack {
         },
         {
           stageName: "Approval",
-          actions: [
-            new ManualApprovalAction({
-              actionName: "Approve",
-              notificationTopic: new Topic(this, "approvalTopic"),
-              additionalInformation: "additional Info for This approval",
-            }),
-          ],
+          actions: [approvalAction],
         },
         {
           stageName: "Deploy",
@@ -100,6 +121,14 @@ export class CodePipelineStack extends Stack {
     const pipelineEvent = new PipelineEvent(this, "PipelineNotificationEvent", {
       pipeline: pipeline,
       topic: topic,
+    });
+
+    new SlackNotifier(this, "SlackNotifier", {
+      pipeline,
+      slackBotToken,
+      slackSigningSecret,
+      slackBotName: "Velocity",
+      slackChannel,
     });
 
     new CfnOutput(this, "codePipelineArn", {
