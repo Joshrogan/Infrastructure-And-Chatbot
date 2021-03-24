@@ -4,6 +4,8 @@
 node_modules
 
 !pipelines.js
+!pipeline-info.js
+!pipeline-restart.js
 
 # CDK asset staging directory
 .cdk.staging
