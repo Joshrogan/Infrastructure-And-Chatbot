@@ -66,9 +66,6 @@ export class CodePipelineStack extends Stack {
       slackSigningSecret,
       slackChannel,
       slackBotName: "Velocity",
-      externalEntityLink: "http://cloudcomponents.org",
-      additionalInformation:
-        "Would you like to promote the build to production?",
     });
 
     const pipeline = new Pipeline(this, "reactPipeline", {
@@ -114,13 +111,6 @@ export class CodePipelineStack extends Stack {
           ],
         },
       ],
-    });
-
-    const topic = new Topic(this, "pipelineEventTopic");
-
-    const pipelineEvent = new PipelineEvent(this, "PipelineNotificationEvent", {
-      pipeline: pipeline,
-      topic: topic,
     });
 
     new SlackNotifier(this, "SlackNotifier", {
