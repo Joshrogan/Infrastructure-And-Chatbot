@@ -58,8 +58,6 @@ export class CodePipelineStack extends Stack {
     const slackSigningSecret = SLACK_SIGNING_SECRET;
     const slackChannel = SLACK_CHANNEL_NAME;
 
-    console.log("slackSigningSecret", slackSigningSecret);
-
     const approvalAction = new SlackApprovalAction({
       actionName: "SlackApproval",
       slackBotToken,
