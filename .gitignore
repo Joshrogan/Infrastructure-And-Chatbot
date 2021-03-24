@@ -3,10 +3,12 @@
 *.d.ts
 node_modules
 
+# excluding chatbot lambdas
 !pipelines.js
 !pipeline-info.js
 !pipeline-restart.js
 !stage-info.js
+!stage-restart.js
 
 # CDK asset staging directory
 .cdk.staging
