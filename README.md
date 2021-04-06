@@ -13,7 +13,7 @@ The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
 
 # Important Files/folders
-bin/pipeline.ts - where all stacks are deployed
-slack-bot-lambdas/ - all lambdas for chatbot
-lib/pipeline/ - all infra stack code in here
-lib/slack-bot/ - all slack bot services, and it's stack in here.
+* bin/pipeline.ts - where all stacks are deployed
+* slack-bot-lambdas/ - all lambdas for chatbot
+* lib/pipeline/ - all infra stack code in here
+* lib/slack-bot/ - all slack bot services, and it's stack in here.
