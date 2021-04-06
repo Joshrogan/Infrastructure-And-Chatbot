@@ -18,5 +18,5 @@ new CloudfrontStack(app, "pipeline-cloudfront", { env: dublin });
 // 3. pipeline to take source from github, run through codebuild and output to above bucket.(which acts as website)
 new CodePipelineStack(app, "pipeline-codepipeline", { env: dublin });
 
-// 4. deploys the api gateway + lambdas for the chatbot to function
+// 4. deploys the api gateways + lambdas for the chatbot to function
 new SlackBotServiceStack(app, "slack-bot-service", { env: dublin });
